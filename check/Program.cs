@@ -15,12 +15,16 @@ namespace check
         {
             var testes = GetUser();
 
+            var teste = ToolsDataBase.SelectUsuarioByName("Lino Cesar Cutini");
+
             MessageBox.Show(testes);
         }
 
         static string GetUser()
         {
             var username = System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName;
+
+            var teste = Environment.UserName;
 
             return username;
         }
