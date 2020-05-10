@@ -24,7 +24,7 @@ namespace check
                 {
                     User usuario = new User();
 
-                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Nome` LIKE " + "'" + nome + "'", conn))
+                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Usuario` LIKE " + "'" + nome + "'", conn))
                     {
                         conn.Open();
                         using (MySqlDataReader dr = command.ExecuteReader())
@@ -45,7 +45,9 @@ namespace check
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao buscar Usuários pelo Nome: " + ex.Message);
+
+                return null;
+                //throw new Exception("Erro ao buscar Usuários pelo Nome: " + ex.Message);
             }
         }
 
