@@ -16,39 +16,47 @@ namespace check
     {
         static void Main(string[] args)
         {
-            var teste = ToolsDataBase.SelectUsuarioByName(GetUser());
-
-            if(teste == null)
+            if(args.Length > 0)
             {
-                try
+                var teste = ToolsDataBase.SelectUsuarioByName(GetUser());
+
+                if (teste == null)
                 {
-                    CreateFileTxt("false");
+                    try
+                    {
+                        CreateFileTxt("false");
+                    }
+                    catch
+                    {
+
+                    }
                 }
-                catch
+
+                else
                 {
+                    try
+                    {
+                        if (teste.Date.Date >= DateNow().Date && teste.UserName == GetUser() && teste.Name == GetUserAsDisplayed() && GetIP() == teste.IPAddress)
+                        {
+                            CreateFileTxt("true");
+                        }
+                    }
+
+                    catch
+                    {
+
+                    }
 
                 }
+
             }
 
             else
             {
-                try
-                {
-                    if (teste.Date.Date >= DateNow().Date && teste.UserName == GetUser() && teste.Name == GetUserAsDisplayed() && GetIP() == teste.IPAddress)
-                    {
-                        CreateFileTxt("true");
-                    }
-                }
 
-                catch
-                {
-
-                }
-                
             }
 
-
-            //MessageBox.Show(userLocal);
+            
         }
 
         static DateTime DateNow()
