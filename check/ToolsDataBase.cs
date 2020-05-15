@@ -33,9 +33,10 @@ namespace check
                             {
                                 usuario.UserName = dr["Usuario"].ToString();
                                 usuario.Name = dr["Nome"].ToString();
-                                usuario.SerialAutocad = dr["Serial_Autocad"].ToString();
-                                usuario.IPAddress = dr["IP"].ToString();
+                                //usuario.SerialAutocad = dr["Serial_Autocad"].ToString();
+                                //usuario.IPAddress = dr["IP"].ToString();
                                 usuario.Date = (DateTime)dr["Data"];
+                                usuario.Ativacao = dr["Ativado"].ToString();
                             }
                         }
                     }
@@ -99,9 +100,10 @@ namespace check
                 cmd.Parameters.AddWithValue("@Serial_Autocad", usuario.SerialAutocad);
                 cmd.Parameters.AddWithValue("@ip", usuario.IPAddress);
                 cmd.Parameters.AddWithValue("@data", usuario.Date);
+                cmd.Parameters.AddWithValue("@ativacao", usuario.Ativacao);
                 con.Open();
                 cmd.ExecuteNonQuery();
-                MessageBox.Show("Usuário adicionado com sucesso!");
+                //MessageBox.Show("Usuário adicionado com sucesso!");
             }
             catch (Exception ex)
             {

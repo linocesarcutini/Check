@@ -1,0 +1,5 @@
+https://documentation.help/AutoLISP-Functions/WS1a9193826455f5ff1a32d8d10ebc6b7ccc-692d.htm
+
+https://knowledge.autodesk.com/pt-br/support/autocad/learn-explore/caas/sfdcarticles/sfdcarticles/PTB/Automatically-load-AutoLISP-routines.html
+
+https://knowledge.autodesk.com/pt-br/search-result/caas/CloudHelp/cloudhelp/2017/PTB/AutoCAD-Customization/files/GUID-FDB4038D-1620-4A56-8824-D37729D42520-htm.html

@@ -59,5 +59,14 @@ namespace check
             set { _date = value; }
         }
 
+        string _ativacao { get; set; } = "0";
+
+        public string Ativacao
+        {
+            get { return _ativacao; }
+
+            set { _ativacao = value; }
+        }
+
     }
 }
