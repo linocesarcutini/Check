@@ -12,7 +12,7 @@ namespace check
 
         static MySqlConnection con = null;
 
-        public static Usuario SelectUsuarioByName(string nome)
+        public static Usuario SelectUsuarioByUserMac(string nome, string mac)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace check
                 {
                     Usuario usuario = new Usuario();
 
-                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Usuario` LIKE " + "'" + nome + "'", conn))
+                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Usuario` LIKE '" + nome + "'", conn))
                     {
                         conn.Open();
                         using (MySqlDataReader dr = command.ExecuteReader())
@@ -28,8 +28,7 @@ namespace check
                             while (dr.Read())
                             {
                                 usuario.User = dr["Usuario"].ToString();
-                                usuario.Nome = dr["Nome"].ToString();
-                                usuario.Ativacao = dr["Ativado"].ToString();
+                                usuario.MacAddress = dr["MacAddress"].ToString();
                             }
                         }
                     }

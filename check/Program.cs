@@ -9,9 +9,9 @@ namespace check
         {
             var macAddress = Identifier("Win32_NetworkAdapterConfiguration", "MacAddress");
 
-            var teste = ToolsDataBase.SelectUsuarioByName(GetUser());
+            var UserMac = ToolsDataBase.SelectUsuarioByUserMac(GetUser());
 
-            if (teste.Nome == null)
+            if (UserMac.Nome == null)
             {
                 try
                 {
@@ -36,11 +36,11 @@ namespace check
             {
                 try
                 {
-                    if (!(teste.Nome == GetUser() || teste.Ativacao == "True"))
+                    if (UserMac.User != GetUser() && UserMac.Ativacao != "True")
                     {
                         Ativacao("false");
                     }
-                    else if (teste.Nome == GetUser() || teste.Ativacao == "True")
+                    else if (UserMac.User == GetUser() && UserMac.Ativacao == "True")
                     {
                         Ativacao("true");
                     }
