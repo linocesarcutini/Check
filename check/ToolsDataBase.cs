@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Windows;
+using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 
 namespace check
 {
@@ -12,13 +12,13 @@ namespace check
 
         static MySqlConnection con = null;
 
-        public static User SelectUsuarioByName(string nome)
+        public static Usuario SelectUsuarioByName(string nome)
         {
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(_conexaoMySQL))
                 {
-                    User usuario = new User();
+                    Usuario usuario = new Usuario();
 
                     using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Usuario` LIKE " + "'" + nome + "'", conn))
                     {
@@ -27,11 +27,8 @@ namespace check
                         {
                             while (dr.Read())
                             {
-                                usuario.UserName = dr["Usuario"].ToString();
-                                usuario.Name = dr["Nome"].ToString();
-                                //usuario.SerialAutocad = dr["Serial_Autocad"].ToString();
-                                //usuario.IPAddress = dr["IP"].ToString();
-                                usuario.Date = (DateTime)dr["Data"];
+                                usuario.User = dr["Usuario"].ToString();
+                                usuario.Nome = dr["Nome"].ToString();
                                 usuario.Ativacao = dr["Ativado"].ToString();
                             }
                         }
@@ -43,11 +40,10 @@ namespace check
             catch (Exception)
             {
                 return null;
-                //throw new Exception("Erro ao buscar Usuários pelo Nome: " + ex.Message);
             }
         }
 
-        public static List<User> SelectListUsuario()
+        public static List<Usuario> SelectListUsuario()
         {
             try
             {
@@ -56,18 +52,17 @@ namespace check
                     using (MySqlCommand command = new MySqlCommand("Select * from User", conn))
                     {
                         conn.Open();
-                        List<User> listaUsuario = new List<User>();
+                        List<Usuario> listaUsuario = new List<Usuario>();
                         using (MySqlDataReader dr = command.ExecuteReader())
                         {
                             while (dr.Read())
                             {
-                                User usuario = new User
+                                Usuario usuario = new Usuario
                                 {
-                                    UserName = dr["Usuario"].ToString(),
-                                    Name = dr["Nome"].ToString(),
-                                    SerialAutocad = dr["Serial_Autocad"].ToString(),
-                                    IPAddress = dr["IP"].ToString(),
-                                    Date = (DateTime)dr["Data"]
+                                    User = dr["Usuario"].ToString(),
+                                    Nome = dr["Nome"].ToString(),
+                                    MacAddress = dr["MacAddress"].ToString(),
+                                    Ativacao = dr["Ativado"].ToString()
                                 };
 
                                 listaUsuario.Add(usuario);
@@ -83,22 +78,19 @@ namespace check
             }
         }
 
-        public static void InsertUsuario(User usuario)
+        public static void InsertUsuario(Usuario usuario)
         {
             try
             {
-                string sql = "INSERT INTO User (nome,usuario,Serial_Autocad,ip,data) VALUES (@nome,@usuario,@Serial_Autocad,@ip,@data)";
+                string sql = "INSERT INTO User (nome,usuario,MacAddress,Ativado) VALUES (@nome,@usuario,@MacAddress,@Ativado)";
                 con = new MySqlConnection(_conexaoMySQL);
                 MySqlCommand cmd = new MySqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@nome", usuario.Name);
-                cmd.Parameters.AddWithValue("@usuario", usuario.UserName);
-                cmd.Parameters.AddWithValue("@Serial_Autocad", usuario.SerialAutocad);
-                cmd.Parameters.AddWithValue("@ip", usuario.IPAddress);
-                cmd.Parameters.AddWithValue("@data", usuario.Date);
-                cmd.Parameters.AddWithValue("@ativacao", usuario.Ativacao);
+                cmd.Parameters.AddWithValue("@nome", usuario.Nome);
+                cmd.Parameters.AddWithValue("@usuario", usuario.User);
+                cmd.Parameters.AddWithValue("@MacAddress", usuario.MacAddress);
+                cmd.Parameters.AddWithValue("@Ativado", usuario.Ativacao);
                 con.Open();
                 cmd.ExecuteNonQuery();
-                //MessageBox.Show("Usuário adicionado com sucesso!");
             }
             catch (Exception ex)
             {
@@ -111,18 +103,26 @@ namespace check
             }
         }
 
-        public static void UpdateUsuario(User usuario)
+        public static void UpdateUsuario(Usuario usuario)
         {
             try
             {
-                string sql = "UPDATE User SET nome= @nome, usuario = @usuario, Serial_Autocad = @Serial_Autocad, ip = @ip, data = @data WHERE nome LIKE @nome";
+                string sql = "UPDATE User SET nome= @nome, usuario = @usuario, MacAddress = @MacAddress, Ativado = @Ativado WHERE usuario = @usuario AND MacAddress = @MacAddress";
                 con = new MySqlConnection(_conexaoMySQL);
                 MySqlCommand cmd = new MySqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@nome", usuario.Name);
-                cmd.Parameters.AddWithValue("@usuario", usuario.UserName);
-                cmd.Parameters.AddWithValue("@Serial_Autocad", usuario.SerialAutocad);
-                cmd.Parameters.AddWithValue("@ip", usuario.IPAddress);
-                cmd.Parameters.AddWithValue("@data", usuario.Date);
+                cmd.Parameters.AddWithValue("@Nome", usuario.Nome);
+                cmd.Parameters.AddWithValue("@Usuario", usuario.User);
+                cmd.Parameters.AddWithValue("@MacAddress", usuario.MacAddress);
+                if (usuario.Ativacao.ToLower() == "true")
+                {
+                    cmd.Parameters.AddWithValue("@Ativado", "1");
+                }
+
+                else
+                {
+                    cmd.Parameters.AddWithValue("@Ativado", "0");
+                }
+
                 con.Open();
                 cmd.ExecuteNonQuery();
                 MessageBox.Show("Usuário alterado com sucesso!");

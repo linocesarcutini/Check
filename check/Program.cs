@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net;
 using Microsoft.Win32;
-using System.Net.Sockets;
 
 namespace check
 {
@@ -9,20 +7,19 @@ namespace check
     {
         static void Main(string[] args)
         {
-            var serialHd = Identifier("Win32_DiskDrive", "SerialNumber");
-
             var macAddress = Identifier("Win32_NetworkAdapterConfiguration", "MacAddress");
 
             var teste = ToolsDataBase.SelectUsuarioByName(GetUser());
 
-            if (teste.UserName == null)
+            if (teste.Nome == null)
             {
                 try
                 {
-                    User userNaoCadastrado = new User
+                    Usuario userNaoCadastrado = new Usuario
                     {
-                        UserName = GetUser(),
-                        Date = DateTime.Now,
+                        Nome = "",
+                        User = GetUser(),
+                        MacAddress = macAddress.Replace(":", ""),
                         Ativacao = "0"
                     };
 
@@ -39,9 +36,13 @@ namespace check
             {
                 try
                 {
-                    if (!(teste.Date.Date >= DateNow().Date && teste.UserName == GetUser() && teste.Ativacao == "True"))
+                    if (!(teste.Nome == GetUser() || teste.Ativacao == "True"))
                     {
                         Ativacao("false");
+                    }
+                    else if (teste.Nome == GetUser() || teste.Ativacao == "True")
+                    {
+                        Ativacao("true");
                     }
                 }
 
@@ -52,41 +53,9 @@ namespace check
             }
         }
 
-        static DateTime DateNow()
-        {
-            return DateTime.Now;
-        }
-
         static string GetUser()
         {
             return Environment.UserName;
-        }
-
-        static string GetUserAsDisplayed(string wmiClass, string wmiProperty)
-        {
-            string result = "";
-            System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
-            System.Management.ManagementObjectCollection moc = mc.GetInstances();
-            foreach (System.Management.ManagementObject mo in moc)
-            {
-                //Only get the first one
-                if (result == "")
-                {
-                    try
-                    {
-                        result = mo[wmiProperty].ToString();
-
-                        if (result != "")
-                        {
-                            return result;
-                        }
-                    }
-                    catch
-                    {
-                    }
-                }
-            }
-            return result;
         }
 
         private static string Identifier(string wmiClass, string wmiProperty)
@@ -112,47 +81,22 @@ namespace check
             return result;
         }
 
-        static string GetIP()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-
-            return string.Empty;
-        }
-
         static void Ativacao(string situacao)
         {
-            string autocadAtiv;
-
             if (situacao == "true")
             {
                 try
-                {
-                    string autocad = @"HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD\";
-                    string autocadCurver = (string) Registry.GetValue(autocad, "CurVer", "");
-                    autocad += autocad + @"\" + autocadCurver + @"\";
-                    string autocadLang = (string) Registry.GetValue(autocad, "CurVer", "");
-                    autocad += autocad + @"\" + autocadCurver + @"\" + autocadLang + @"\Applications\";
-                    autocadAtiv = (string) Registry.GetValue(autocad, "1", "");
-
-                    Registry.SetValue(autocad, autocadAtiv, "1");
-                }
-                catch (System.Exception)
                 {
                     string autocad = @"HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD\";
                     string autocadCurver = (string)Registry.GetValue(autocad, "CurVer", "");
                     autocad += autocad + @"\" + autocadCurver + @"\";
                     string autocadLang = (string)Registry.GetValue(autocad, "CurVer", "");
                     autocad += autocad + @"\" + autocadCurver + @"\" + autocadLang + @"\Applications\";
-                    autocadAtiv = (string)Registry.GetValue(autocad, "1", "");
 
-                    Registry.SetValue(autocad, autocadAtiv, "0");
+                    Registry.SetValue(autocad, "1", "1");
+                }
+                catch (System.Exception)
+                {
                 }
             }
 
@@ -162,15 +106,15 @@ namespace check
                 {
                     string autocad = @"HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD\";
                     string autocadCurver = (string)Registry.GetValue(autocad, "CurVer", "");
-                    autocad += autocad + @"\" + autocadCurver + @"\";
+                    autocad += @"\" + autocadCurver + @"\";
                     string autocadLang = (string)Registry.GetValue(autocad, "CurVer", "");
-                    autocad += autocad + @"\" + autocadCurver + @"\" + autocadLang + @"\Applications\";
-                    autocadAtiv = (string)Registry.GetValue(autocad, "1", "");
+                    autocad += autocadLang + @"\Applications\";
 
-                    Registry.SetValue(autocad, autocadAtiv, "0");
+                    Registry.SetValue(autocad, "1", "0");
                 }
-                catch (System.Exception)
+                catch (System.Exception ex)
                 {
+                    throw new Exception(ex.Message);
                 }
             }
         }
