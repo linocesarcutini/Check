@@ -1,10 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace check
@@ -44,9 +40,8 @@ namespace check
                     return usuario;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 return null;
                 //throw new Exception("Erro ao buscar Usuários pelo Nome: " + ex.Message);
             }
@@ -116,7 +111,6 @@ namespace check
             }
         }
 
-
         public static void UpdateUsuario(User usuario)
         {
             try
@@ -167,7 +161,5 @@ namespace check
                 SelectListUsuario();
             }
         }
-
-
     }
 }

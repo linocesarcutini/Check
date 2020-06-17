@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace check
 {
@@ -11,7 +6,6 @@ namespace check
     {
         public User()
         {
-
         }
 
         string _name { get; set; }

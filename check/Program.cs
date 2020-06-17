@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using MySql.Data.MySqlClient;
 using System.Net;
-using System.Net.Sockets;
 using Microsoft.Win32;
+using System.Net.Sockets;
 
 namespace check
 {
@@ -17,28 +9,11 @@ namespace check
     {
         static void Main(string[] args)
         {
-            var serialHd = identifier("Win32_DiskDrive", "SerialNumber");
+            var serialHd = Identifier("Win32_DiskDrive", "SerialNumber");
 
-            var macAddress = identifier("Win32_NetworkAdapterConfiguration", "MacAddress");
-
-            //string nomeCompletoUser = GetUserAsDisplayed("Win32_UserAccount", "FullName");
-
-            //RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
-
-            //var names = key.GetValueNames();
-
-            //var serialWindows = key.GetValue("DigitalProductId") as byte[];
-
-            //var serialCPU = identifier("Win32_Product", "ProductID");
-
-            //args = new string[1];
-
-            //var user = GetUser();
-            //var name = GetUserAsDisplayed();
+            var macAddress = Identifier("Win32_NetworkAdapterConfiguration", "MacAddress");
 
             var teste = ToolsDataBase.SelectUsuarioByName(GetUser());
-
-            //MessageBox.Show(args[0]);
 
             if (teste.UserName == null)
             {
@@ -53,13 +28,10 @@ namespace check
 
                     ToolsDataBase.InsertUsuario(userNaoCadastrado);
 
-                    CreateFileTxt("false");
-
-                    //MessageBox.Show("Deu Ruim1");
+                    Ativacao("false");
                 }
                 catch
                 {
-
                 }
             }
 
@@ -67,29 +39,17 @@ namespace check
             {
                 try
                 {
-                    //GetIP() == teste.IPAddress &&
-                    if (teste.Date.Date >= DateNow().Date && teste.UserName == GetUser() && teste.Ativacao == "True")
+                    if (!(teste.Date.Date >= DateNow().Date && teste.UserName == GetUser() && teste.Ativacao == "True"))
                     {
-                        CreateFileTxt("true");
-
-                        //MessageBox.Show("Tudo Certo!");
-                    }
-
-                    else
-                    {
-                        CreateFileTxt("false");
+                        Ativacao("false");
                     }
                 }
 
                 catch
                 {
-
                 }
 
             }
-
-            //Console.WriteLine("serialHD: " + serialHd + " " + "MAC: " + macAddress);
-            //Console.ReadKey();
         }
 
         static DateTime DateNow()
@@ -116,11 +76,10 @@ namespace check
                     {
                         result = mo[wmiProperty].ToString();
 
-                        if(result != "")
+                        if (result != "")
                         {
                             return result;
                         }
-                        //break;
                     }
                     catch
                     {
@@ -128,11 +87,9 @@ namespace check
                 }
             }
             return result;
-            //return System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName;
         }
 
-        private static string identifier(string wmiClass, string wmiProperty)
-        //Return a hardware identifier
+        private static string Identifier(string wmiClass, string wmiProperty)
         {
             string result = "";
             System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
@@ -169,11 +126,53 @@ namespace check
             return string.Empty;
         }
 
-        static void CreateFileTxt(string text)
+        static void Ativacao(string situacao)
         {
-            File.WriteAllText(@"C:\DESENHO\EXE\check.txt", text);
+            string autocadAtiv;
+
+            if (situacao == "true")
+            {
+                try
+                {
+                    string autocad = @"HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD\";
+                    string autocadCurver = (string) Registry.GetValue(autocad, "CurVer", "");
+                    autocad += autocad + @"\" + autocadCurver + @"\";
+                    string autocadLang = (string) Registry.GetValue(autocad, "CurVer", "");
+                    autocad += autocad + @"\" + autocadCurver + @"\" + autocadLang + @"\Applications\";
+                    autocadAtiv = (string) Registry.GetValue(autocad, "1", "");
+
+                    Registry.SetValue(autocad, autocadAtiv, "1");
+                }
+                catch (System.Exception)
+                {
+                    string autocad = @"HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD\";
+                    string autocadCurver = (string)Registry.GetValue(autocad, "CurVer", "");
+                    autocad += autocad + @"\" + autocadCurver + @"\";
+                    string autocadLang = (string)Registry.GetValue(autocad, "CurVer", "");
+                    autocad += autocad + @"\" + autocadCurver + @"\" + autocadLang + @"\Applications\";
+                    autocadAtiv = (string)Registry.GetValue(autocad, "1", "");
+
+                    Registry.SetValue(autocad, autocadAtiv, "0");
+                }
+            }
+
+            if (situacao == "false")
+            {
+                try
+                {
+                    string autocad = @"HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD\";
+                    string autocadCurver = (string)Registry.GetValue(autocad, "CurVer", "");
+                    autocad += autocad + @"\" + autocadCurver + @"\";
+                    string autocadLang = (string)Registry.GetValue(autocad, "CurVer", "");
+                    autocad += autocad + @"\" + autocadCurver + @"\" + autocadLang + @"\Applications\";
+                    autocadAtiv = (string)Registry.GetValue(autocad, "1", "");
+
+                    Registry.SetValue(autocad, autocadAtiv, "0");
+                }
+                catch (System.Exception)
+                {
+                }
+            }
         }
-
-
     }
 }
