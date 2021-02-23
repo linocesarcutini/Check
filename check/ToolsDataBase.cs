@@ -7,12 +7,17 @@ namespace check
 {
     public class ToolsDataBase
     {
-        static string _conexaoMySQL = "server=seltteactive.mysql.dbaas.com.br;database=seltteactive;" +
-                                      "uid=seltteactive;password=SeLtTe13579246";
+        static string server = "seltteactive.mysql.dbaas.com.br";
+        static string database = "seltteactive";
+        static string userID = "seltteactive";
+        static string password = "Seltte13579246";
+
+        static string _conexaoMySQL = $"server={server};database={database};uid={userID};password={password}";
+                                      //"uid=seltteactive;password=SeLtTe13579246";Seltte13579246
 
         static MySqlConnection con = null;
 
-        public static Usuario SelectUsuarioByUserMac(string nome, string mac)
+        public static Usuario SelectUsuarioByUserMac(string user, string mac)
         {
             try
             {
@@ -20,15 +25,17 @@ namespace check
                 {
                     Usuario usuario = new Usuario();
 
-                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Usuario` LIKE '" + nome + "'", conn))
+                    using (MySqlCommand command = new MySqlCommand("SELECT * FROM `User` WHERE `Usuario` LIKE '" + user + "' AND `MacAddress` LIKE '" + mac + "'", conn))
                     {
                         conn.Open();
                         using (MySqlDataReader dr = command.ExecuteReader())
                         {
                             while (dr.Read())
                             {
+                                usuario.Nome = dr["Nome"].ToString();
                                 usuario.User = dr["Usuario"].ToString();
                                 usuario.MacAddress = dr["MacAddress"].ToString();
+                                usuario.Ativacao = dr["Ativado"].ToString();
                             }
                         }
                     }
